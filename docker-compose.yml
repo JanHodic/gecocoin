@@ -1,0 +1,56 @@
+version: "3.9"
+
+
+services:
+  db:
+    image: bitnami/postgresql:16
+    container_name: pg-db
+    environment:
+      POSTGRESQL_DATABASE: ${POSTGRES_DB:-crypto}
+      POSTGRESQL_USERNAME: ${POSTGRES_USER:-appuser}
+      POSTGRESQL_PASSWORD: ${POSTGRES_PASSWORD:-super_secret}
+    volumes:
+      - pg_data:/bitnami/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-appuser} -d ${POSTGRES_DB:-crypto} -h 127.0.0.1 || exit 1"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+
+  redis:
+    image: redis:7-alpine
+    container_name: redis-cache
+
+
+  api:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: fastapi-api
+    environment:
+      - DATABASE_URL=postgresql+psycopg2://${POSTGRES_USER:-appuser}:${POSTGRES_PASSWORD:-super_secret}@db:5432/${POSTGRES_DB:-crypto}
+      - COINGECKO_BASE=https://api.coingecko.com/api/v3
+      - REDIS_URL=redis://redis:6379/0
+      - CORS_ORIGINS=http://localhost:8080
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    ports:
+    - "8001:8000"
+
+
+  web:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: react-web
+    depends_on:
+      - api
+    ports:
+      - "8002:80"
+
+volumes:
+  pg_data:
