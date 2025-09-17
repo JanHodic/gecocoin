@@ -17,4 +17,4 @@ class Coin(Base):
     current_price: Mapped[float | None] = mapped_column(nullable=True)
     created_at: Mapped[str] = mapped_column(DateTime(timezone=True), server_default=func.now())
     updated_at: Mapped[str] = mapped_column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
-    metadata: Mapped[dict | None] = mapped_column(JSON, nullable=True)
+    meta: Mapped[dict | None] = mapped_column("metadata",JSON, nullable=True)

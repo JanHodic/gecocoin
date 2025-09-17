@@ -1,5 +1,5 @@
 from __future__ import annotations
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, AliasChoices
 from typing import Optional
 
 
@@ -22,7 +22,7 @@ class CoinOut(BaseModel):
     current_price: Optional[float] = None
     created_at: str
     updated_at: str
-    metadata: Optional[dict] = None
+    metadata: Optional[dict] = Field(default=None, validation_alias=AliasChoices("meta", "metadata"))
 
 
     model_config = {

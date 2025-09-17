@@ -4,7 +4,6 @@ from sqlalchemy.orm import Session
 from sqlalchemy import select
 from datetime import datetime, timezone
 
-
 from ..deps import get_db
 from ..models import Coin
 from ..schemas import CoinCreate, CoinUpdate, CoinOut
@@ -53,7 +52,7 @@ async def create_coin(payload: CoinCreate, db: Session = Depends(get_db)):
         market_cap_rank=details.get("market_cap_rank"),
         market_cap=cap,
         current_price=price,
-        metadata={
+        meta={
             "links": details.get("links"),
             "categories": details.get("categories"),
             "hashing_algorithm": details.get("hashing_algorithm"),
@@ -72,9 +71,9 @@ async def update_coin(coin_id: int, payload: CoinUpdate, db: Session = Depends(g
     if not coin:
         raise HTTPException(404, detail="Coin not found")
     if payload.notes is not None:
-        meta = dict(coin.metadata or {})
+        meta = dict(coin.meta or {})
         meta["notes"] = payload.notes
-    coin.metadata = meta
+    coin.meta = meta
     db.add(coin); db.commit(); db.refresh(coin)
     return coin
 
@@ -102,14 +101,14 @@ async def refresh_coin(coin_id: int, db: Session = Depends(get_db)):
     coin.market_cap = (market.get("market_cap") or {}).get("usd")
     coin.current_price = (market.get("current_price") or {}).get("usd")
     coin.updated_at = datetime.now(timezone.utc)
-    meta = dict(coin.metadata or {})
+    meta = dict(coin.meta or {})
     meta.update({
         "links": details.get("links"),
         "categories": details.get("categories"),
         "hashing_algorithm": details.get("hashing_algorithm"),
         "genesis_date": details.get("genesis_date"),
     })
-    coin.metadata = meta
+    coin.meta = meta
     db.add(coin); db.commit(); db.refresh(coin)
     return coin
 

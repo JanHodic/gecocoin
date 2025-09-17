@@ -17,5 +17,5 @@ export type Coin = {
     current_price?: number
     created_at: string
     updated_at: string
-    metadata?: Record<string, unknown>
+    meta?: Record<string, unknown>
 }

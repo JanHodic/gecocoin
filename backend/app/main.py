@@ -6,7 +6,7 @@ from .settings import CORS_ORIGINS
 from .routers import coins
 
 
-Base.metadata.create_all(bind=engine)
+Base.meta.create_all(bind=engine)
 
 
 app = FastAPI(title="Crypto CRUD API", version="1.0.0")

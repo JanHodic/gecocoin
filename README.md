@@ -17,9 +17,3 @@ curl http://localhost:8000/coins/
 curl -X POST http://localhost:8000/coins/1/refresh
 # Refresh všech
 curl -X POST http://localhost:8000/coins/refresh-all
-
----
-## ✨ Poznámky
-- Redis je využit pro **cache** odpovědí z CoinGecko (TTL 2–5 min) → šetří limity.
-- CORS je nastaven pro `http://localhost:8080` (pokud proxy nepoužiješ). V téhle šabloně frontend volá **/api** přes Nginx, takže CORS většinou netřeba.
-- Pro produkci přidej Alembic migrace, autentizaci, testy (Pytest), rate-limiting a lepší chybové kódy.
